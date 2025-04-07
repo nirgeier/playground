@@ -14,4 +14,4 @@ git commit -m "Merge request Demo" || \
     echo "Failed to create commit. Please check your files."
 
 # Step 04: Push changes to GitHub
-gh push 
+git push 
