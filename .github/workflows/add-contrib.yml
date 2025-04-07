@@ -69,6 +69,7 @@ jobs:
         run: |
           echo "Adding contributor [${{ env.PR_AUTHOR }}] to CONTRIBUTORS.md"
           echo "- [@${{ env.PR_AUTHOR }}](https://github.com/${{ env.PR_AUTHOR }})" >> CONTRIBUTORS.md
+          cat CONTRIBUTORS.md
           
       
       - name: Commit and push changes
