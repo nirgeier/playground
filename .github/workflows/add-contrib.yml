@@ -46,6 +46,7 @@ jobs:
       - name: Check if author is already in CONTRIBUTORS.md
         id: check_contributor
         run: |
+          touch CONTRIBUTORS.md
           # Check if author already exists in the file
           if grep -q "${{ env.PR_AUTHOR }}" CONTRIBUTORS.md; 
           then
