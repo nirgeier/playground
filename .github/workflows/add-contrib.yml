@@ -34,7 +34,8 @@ jobs:
           # Full git history needed to get proper commit info
           fetch-depth: 0
           persist-credentials: false
-
+          token: ${{ secrets.ACTION_TOKEN }}
+        
       # Get the author of the PR and store in an environment variable
       - name: Get PR author
         id: get-author
