@@ -74,8 +74,8 @@ jobs:
       - name: Commit and push changes
         if: env.CONTRIBUTOR_EXISTS == 'false'
         run: |
-          git config --local user.email "nirgeier@gmail.com"
-          git config --local user.name "Nir Geier"
-          git add CONTRIBUTORS.md
-          git commit -m "docs: added @${{ env.PR_AUTHOR }} to contributors" -m "Automatically added by GitHub Action after PR merge"
+          git config --local user.email ${{ env.GIT_USER_EMAIL }}
+          git config --local user.name ${{ env.GIT_USER_NAME }}
+          git add .
+          git commit -m "Automatically added @${{ env.PR_AUTHOR }} to contributors by GitHub Action after PR merge"
           git push
