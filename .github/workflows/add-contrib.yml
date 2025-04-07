@@ -62,7 +62,7 @@ jobs:
         if: steps.check_contributor.outputs.found == 'false'
         run: |
           AUTHOR="${{ steps.get_author.outputs.author }}"
-          echo "- [@$AUTHOR](https://github.com/$AUTHOR)" >> CONTRIBUTORS.md
+          echo "- [@$PR_AUTHOR](https://github.com/$PR_AUTHOR)" >> CONTRIBUTORS.md
 
       - name: Add contributor if not exists
         if: env.CONTRIBUTOR_EXISTS == 'false'
