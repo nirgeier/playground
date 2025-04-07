@@ -74,20 +74,10 @@ jobs:
           
       
       - name: Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "Automatically added @${{ env.PR_AUTHOR }} to contributors by GitHub Action after PR merge"
-          commit_options: '--no-verify'
-          file_pattern:   "*"
-          commit_user_name:   ${{ env.GIT_USER_NAME }}
-          commit_user_email:  ${{ env.GIT_USER_EMAIL }}
-          commit_author:      GitHub Actions <actions@github.com>
-
-      # - name: Commit and push changes
-      #   if: env.CONTRIBUTOR_EXISTS == 'false'
-      #   run: |
-      #     git config --local user.email ${{ env.GIT_USER_EMAIL }}
-      #     git config --local user.name ${{ env.GIT_USER_NAME }}
-      #     git add .
-      #     git commit -m "Automatically added @${{ env.PR_AUTHOR }} to contributors by GitHub Action after PR merge"
-      #     git push
+        if: env.CONTRIBUTOR_EXISTS == 'false'
+        run: |
+          git config --local user.email ${{ env.GIT_USER_EMAIL }}
+          git config --local user.name ${{ env.GIT_USER_NAME }}
+          git add .
+          git commit -m "Automatically added @${{ env.PR_AUTHOR }} to contributors by GitHub Action after PR merge"
+          git push
