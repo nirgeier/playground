@@ -61,15 +61,15 @@ jobs:
       - name: Add author to CONTRIBUTORS.md
         if: steps.check_contributor.outputs.found == 'false'
         run: |
-          AUTHOR="${{ steps.get_author.outputs.author }}"
+          PR_AUTHOR="${{ steps.get_author.outputs.author }}"
           echo "- [@$PR_AUTHOR](https://github.com/$PR_AUTHOR)" >> CONTRIBUTORS.md
 
       - name: Add contributor if not exists
         if: env.CONTRIBUTOR_EXISTS == 'false'
         run: |
-          # Add contributor to CONTRIBUTORS.md
+          echo "Adding contributor [${{ env.PR_AUTHOR }}] to CONTRIBUTORS.md"
           echo "- [@${{ env.PR_AUTHOR }}](https://github.com/${{ env.PR_AUTHOR }})" >> CONTRIBUTORS.md
-          echo "Added ${{ env.PR_AUTHOR }} to CONTRIBUTORS.md"
+          
       
       - name: Commit and push changes
         if: env.CONTRIBUTOR_EXISTS == 'false'
