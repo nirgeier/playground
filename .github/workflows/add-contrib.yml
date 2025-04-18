@@ -1,0 +1,83 @@
+name: Auto-update Contributors
+
+on:
+  # Trigger action on pull request closed
+  pull_request:
+    types: [closed]
+    # List of branches to work on
+    branches:
+      - main
+      - master
+
+env:
+  CONTRIBUTOR_EXISTS: "false"
+  CONTRIBUTORS_FILE:  "CONTRIBUTORS.md"
+  GIT_USER_EMAIL:     "nirgeier@gmail.com"
+  GIT_USER_NAME:      "Nir Geier"
+  PR_AUTHOR:          "nirgeier"
+
+jobs:
+  add-contributor:
+
+    # Only run this job when a PR is merged (not just closed)
+    #if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+        with:
+          # Full git history needed to get proper commit info
+          fetch-depth: 0
+          persist-credentials: true
+          token: ${{ secrets.ACTION_TOKEN }}
+        
+      # Get the author of the PR and store in an environment variable
+      - name: Get PR author
+        id: get-author
+        run: |
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          echo "PR_AUTHOR=$PR_AUTHOR" >> $GITHUB_ENV
+          echo "PR author is $PR_AUTHOR"
+
+      - name: Check if author is already in CONTRIBUTORS.md
+        id: check_contributor
+        run: |
+          touch CONTRIBUTORS.md
+          # Check if author already exists in the file
+          if grep -q "${{ env.PR_AUTHOR }}" CONTRIBUTORS.md; 
+          then
+            echo "Author ${{ env.PR_AUTHOR }} already exists in CONTRIBUTORS.md"
+          else
+            echo "Author ${{ env.PR_AUTHOR }} not found in CONTRIBUTORS.md"
+            CONTRIBUTOR_EXISTS="false"
+          fi
+          # Store the output as an environment variable
+          echo "CONTRIBUTOR_EXISTS=$CONTRIBUTOR_EXISTS" >> $GITHUB_ENV
+
+      - name: Add author to CONTRIBUTORS.md
+        if: steps.check_contributor.outputs.found == 'false'
+        run: |
+          PR_AUTHOR="${{ steps.get_author.outputs.author }}"
+          echo "- [@$PR_AUTHOR](https://github.com/$PR_AUTHOR)" >> CONTRIBUTORS.md
+
+      - name: Add contributor if not exists
+        if: env.CONTRIBUTOR_EXISTS == 'false'
+        run: |
+          echo "Adding contributor [${{ env.PR_AUTHOR }}] to CONTRIBUTORS.md"
+          echo "- [@${{ env.PR_AUTHOR }}](https://github.com/${{ env.PR_AUTHOR }})" >> CONTRIBUTORS.md
+          cat CONTRIBUTORS.md
+          
+      
+      - name: Commit and push changes
+        if: env.CONTRIBUTOR_EXISTS == 'false'
+        run: |
+          git config --local user.email ${{ env.GIT_USER_EMAIL }}
+          git config --local user.name ${{ env.GIT_USER_NAME }}
+          git add .
+          git commit -m "Automatically added @${{ env.PR_AUTHOR }} to contributors by GitHub Action after PR merge"
+          git push
